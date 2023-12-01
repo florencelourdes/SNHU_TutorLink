@@ -4,6 +4,9 @@ import 'package:snhu_tutorlink/Message_History.dart';
 import 'package:snhu_tutorlink/Ryan_Message_History.dart';
 import 'package:snhu_tutorlink/TutorDisplay.dart';
 import 'login.dart';
+import 'settings.dart';
+import 'userData.dart';
+import 'package:provider/provider.dart';
 
 
 void main() async {
@@ -17,9 +20,13 @@ void main() async {
       appId: "1:785876527710:android:4cf695408ea6c3139f22cf",
     ),
   );
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => UserData(),
+      child: const MyApp(),
+    ),
+  );
 }
-
 
 class Tutors{ //Basic class for tutors on the home page
   late String name;
@@ -131,6 +138,13 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: ""),
         ],
         onTap: (int index) {
+          if (index == 2) { // Index 2 corresponds to the "settings" icon
+            // Navigate to the settings page when the "settings" icon is tapped.
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Settings()),
+            );
+          }
           if (index == 1) { // Index 1 corresponds to the "Chat" icon
             // Navigate to the ChatScreen when the "Chat" icon is tapped.
             Navigator.push(
