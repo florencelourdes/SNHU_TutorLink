@@ -1,6 +1,6 @@
 {
-    "name": "settings_test",
-    "short_name": "settings_test",
+    "name": "new_gradle",
+    "short_name": "new_gradle",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

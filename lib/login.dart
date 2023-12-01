@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'main.dart';
@@ -13,13 +14,20 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final FirebaseFirestore store = FirebaseFirestore.instance;
 
   Future<void> _login() async {
     try {
+      UserCredential credentials =
       await _auth.signInWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
       );
+
+      store.collection('users').doc(credentials.user!.uid).set({
+        'uid' : credentials.user!.uid,
+        'email' : credentials.user!.email,
+      }, SetOptions(merge: true));
       // If authentication is successful, you can navigate to the home screen.
       Navigator.pushReplacement(
         context,
@@ -34,6 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
+
   }
 
   @override
