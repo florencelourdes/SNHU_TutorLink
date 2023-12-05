@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'TutorDisplay.dart';
 import 'package:flutter/material.dart';
-
+import 'package:snhu_tutorlink/settings.dart';
 import 'Ryan_Chat_Room.dart';
+import 'settings.dart';
 
 class RyanMessageState extends StatefulWidget
 {
@@ -97,7 +99,30 @@ void initState() {
           BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: ""),
           BottomNavigationBarItem(icon: Icon(Icons.chat), label: ""),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: "")
-        ],),
+        ],
+        onTap: (int index) {
+          if (index == 2) { // Index 2 corresponds to the "settings" icon
+            // Navigate to the settings page when the "settings" icon is tapped.
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SettingsPage()),
+            );
+          }
+        if (index == 1) { // Index 1 corresponds to the "Chat" icon
+          // Navigate to the ChatScreen when the "Chat" icon is tapped.
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const RyanMessageState()),
+          );
+        }
+        if(index == 0){
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const TutorState(title: "")), //change it to your setting page
+          );
+        }
+      },
+      ),
     );
   }
 

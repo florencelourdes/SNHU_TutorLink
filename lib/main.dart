@@ -129,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.yellow,
+        backgroundColor: Color(0xffFDB913),
         showSelectedLabels: false,
         showUnselectedLabels: false,
         items: const [
@@ -142,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
             // Navigate to the settings page when the "settings" icon is tapped.
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Settings()),
+              MaterialPageRoute(builder: (context) => SettingsPage()),
             );
           }
           if (index == 1) { // Index 1 corresponds to the "Chat" icon

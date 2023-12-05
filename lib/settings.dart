@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'Ryan_Message_History.dart';
 import 'login.dart';
 import 'userData.dart';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'TutorDisplay.dart';
+import 'settings.dart';
 
-class Settings extends StatefulWidget {
+class SettingsPage extends StatefulWidget {
   @override
   _SettingsState createState() => _SettingsState();
 }
 
-class _SettingsState extends State<Settings> {
+class _SettingsState extends State<SettingsPage> {
   bool messageNotification = true; // Default value for Message notification
   bool appointmentReminderNotification = true; // Default value for Appointment Reminder notification
 
@@ -73,6 +76,7 @@ class _SettingsState extends State<Settings> {
                   _pickImage(context);
                 },
               ),
+              /*
               SwitchListTile(
                 title: Text('Message Notifications'),
                 value: messageNotification,
@@ -92,7 +96,7 @@ class _SettingsState extends State<Settings> {
                     // Implement logic for handling Appointment Reminder notification toggle change
                   });
                 },
-              ),
+              ), */
               ListTile(
                 title: Text('Log Out'),
                 onTap: () {
@@ -102,6 +106,38 @@ class _SettingsState extends State<Settings> {
             ],
           ),
         ],
+      ),
+      bottomNavigationBar: BottomNavigationBar( //Navigation bar. Something like this will be on every page
+        backgroundColor: Color(0xffFDB913),
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: ""),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: ""),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "")
+        ],
+        onTap: (int index) {
+          if (index == 2) { // Index 2 corresponds to the "settings" icon
+            // Navigate to the settings page when the "settings" icon is tapped.
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SettingsPage()),
+            );
+          }
+          if (index == 1) { // Index 1 corresponds to the "Chat" icon
+            // Navigate to the ChatScreen when the "Chat" icon is tapped.
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const RyanMessageState()),
+            );
+          }
+          if(index == 0){
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const TutorState(title: "")), //change it to your setting page
+            );
+          }
+        },
       ),
     );
   }
