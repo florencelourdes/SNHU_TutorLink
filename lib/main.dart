@@ -101,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   Widget buildList(BuildContext context){
-    return StreamBuilder<QuerySnapshot>(stream: FirebaseFirestore.instance.collection('ryan_chat_room').doc("UOH7pnFKBzdHqAYyCKpi38nH0FG3_sWpxSNetwUOaQccJ15fa7ZozTAI3").collection('messages').where('isSeen', isEqualTo: false).limit(3).snapshots(),
+    return StreamBuilder<QuerySnapshot>(stream: FirebaseFirestore.instance.collection('ryan_chat_room').doc("UOH7pnFKBzdHqAYyCKpi38nH0FG3_sWpxSNetwUOaQccJ15fa7ZozTAI3").collection('messages').where('isSeen', isEqualTo: false).where('recieverId', isEqualTo: _auth.currentUser!.uid).limit(3).snapshots(),
         builder: (context, snapshot){
           if (snapshot.hasError){
             return const Text("Error");
