@@ -10,8 +10,9 @@ import 'TutorDisplay.dart';
 import 'settings.dart';
 
 class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
   @override
-  _SettingsState createState() => _SettingsState();
+  State<SettingsPage> createState() => _SettingsState();
 }
 
 class _SettingsState extends State<SettingsPage> {
@@ -37,7 +38,7 @@ class _SettingsState extends State<SettingsPage> {
   Future<void> logout(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
       );

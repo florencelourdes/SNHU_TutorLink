@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'TutorDisplay.dart';
 import 'package:flutter/material.dart';
 import 'package:snhu_tutorlink/settings.dart';
 import 'Ryan_Chat_Room.dart';
+import 'TutorDisplay.dart';
 import 'settings.dart';
 
 class RyanMessageState extends StatefulWidget
@@ -127,7 +127,7 @@ void initState() {
   }
 
   Widget buildList(){
-    return StreamBuilder<QuerySnapshot>(stream: FirebaseFirestore.instance.collection('users').where("email", arrayContains: tutorToSearch).snapshots(),
+    return StreamBuilder<QuerySnapshot>(stream: FirebaseFirestore.instance.collection('users').where("email", isEqualTo: tutorToSearch).snapshots(),
         builder: (context, snapshot){
           if (snapshot.hasError){
             return const Text("Error");
