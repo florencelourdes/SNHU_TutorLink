@@ -1,7 +1,7 @@
 # SNHU-TutorLink #
 
 SNHU TutorLink is a new and innovative way to find a tutor for classwork!
-Current Tutor scheduling site is archaic, and is only Web Based
+Current Tutor scheduling site is archaic, and is only Web Based.
 TutorLink is a more modern way to enhance your learning and improve your grades.
 
 ## Functionalities: ##
