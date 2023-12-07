@@ -41,6 +41,7 @@ class _SettingsState extends State<SettingsPage> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
+              (Route<dynamic> route) => false
       );
     } catch (e) {
       print('Error during logout: $e');
