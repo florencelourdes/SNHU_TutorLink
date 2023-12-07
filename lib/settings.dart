@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'TutorDisplay.dart';
 import 'settings.dart';
+import 'main.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -55,7 +56,24 @@ class _SettingsState extends State<SettingsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: Align(
+          alignment: Alignment.bottomLeft,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MyHomePage(title: "")),
+              );
+            },
+            child: Image(
+              image: NetworkImage(
+                  "https://dlmrue3jobed1.cloudfront.net/uploads/school/SouthernNewHampshireUniversity/snhu_initials_rgb_pos.png"),
+              width: 300,
+              height: 100,
+            ),
+          ),
+        ),
+        flexibleSpace: Container(decoration: BoxDecoration(color: Color(0xff009DEA))),
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
