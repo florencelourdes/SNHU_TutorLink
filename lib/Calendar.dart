@@ -15,7 +15,9 @@ class Schedule {
   late DateTime endDate;
   late String description;
   late String frequency;
-  Schedule(bool isRepeating, DateTime startInput, DateTime endInput, DateTime endDate, String descInput, String freqInput)
+  late String location;
+  Schedule(bool isRepeating, DateTime startInput, DateTime endInput, DateTime endDate,
+      String descInput, String freqInput, String location)
   {
     this.endDate = endDate;
     this.isRepeating = isRepeating;
@@ -23,6 +25,7 @@ class Schedule {
     endTime = endInput;
     description = descInput;
     frequency = freqInput;
+    this.location = location;
   }
 }
 
@@ -90,7 +93,7 @@ class TutorProfile extends StatelessWidget {
                 List<Availability> tempData = snapshot.data ?? [];
                 if(snapshot.hasData){
                   for(Availability item in tempData){
-                    ScheduleList.add(Schedule(item.isRepeating, item.startTime, item.endTime, item.endDate, item.location, item.dateAbbreviation ?? ""));
+                    ScheduleList.add(Schedule(item.isRepeating, item.startTime, item.endTime, item.endDate, item.location, item.dateAbbreviation ?? "", item.location));
                   }
                   return SfCalendar(
                       showDatePickerButton: true,
@@ -98,7 +101,8 @@ class TutorProfile extends StatelessWidget {
                       view: CalendarView.week,
                       onTap: (details) {
                         if (details.targetElement == CalendarElement.appointment){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> ScheduleState(title: "", index: 0)));
+                          Appointment app = details.appointments![0];
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> ScheduleState(title: "", tutor: tutor.tutor, appointment: app, index: 0)));
                         }
                       });
                 }else{
@@ -136,6 +140,7 @@ List<Appointment> getAppointments(){
           startTime: appointment.startDate,
           endTime: appointment.endTime,
           subject: appointment.description,
+          location: appointment.location,
           color: Colors.blue,
           //recurrenceRule: '${'FREQ=WEEKLY;BYDAY=' + appointment.frequency + ';UNTIL=20240428'}',
           recurrenceRule: '${'FREQ=WEEKLY;BYDAY=' + appointment.frequency + ';UNTIL='+DateFormat('yyyyMMdd').format(appointment.endDate)}'
@@ -146,6 +151,7 @@ List<Appointment> getAppointments(){
           startTime: appointment.startDate,
           endTime: appointment.endTime,
           subject: appointment.description,
+          location: appointment.location,
           color: Colors.blue
       ));
     }

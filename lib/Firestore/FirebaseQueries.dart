@@ -128,4 +128,11 @@ class FirebaseQueries{
     return tutorAvailabilityCards;
   }
 
+  Future<List<String>> getUnavailableTimeslots(String tutorID, String docRef, String date) async{
+    List<String> unavailableTimeslots = [];
+    final ref = db.collection("Availability").doc(docRef);
+
+    return unavailableTimeslots;
+  }
+
 }
