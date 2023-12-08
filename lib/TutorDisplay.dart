@@ -4,10 +4,6 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:snhu_tutorlink/main.dart';
 import 'package:snhu_tutorlink/Calendar.dart';
 import 'dart:developer';
-import 'package:intl/intl.dart';
-
-import 'Firestore/FirebaseQueries.dart';
-import 'Models/TutorAvailabilityCard.dart';
 
 class FilterResults{
   final String NameFilter;
@@ -31,17 +27,12 @@ class TutorDisplay extends State<TutorState> { //The home page where you can loo
 
   late TextEditingController filterControl;
   late TextEditingController nameFilterControl;
-  FirebaseQueries firebaseQueries = FirebaseQueries();
-  late Future<List<TutorAvailabilityCard>> _getAvailabilities;
-  DateTime date = DateTime(2024, 11, 7);
 
   @override
   void initState(){
     super.initState();
     nameFilterControl = TextEditingController();
     filterControl = TextEditingController();
-    FirebaseQueries firestoreQuieries = FirebaseQueries();
-    _getAvailabilities = Future(() async => await firestoreQuieries.getAvailabilitiesOnDate(date));
   }
 
   @override
@@ -63,13 +54,7 @@ class TutorDisplay extends State<TutorState> { //The home page where you can loo
   void dropDownCallback(String? selectedValue){
     if(selectedValue is String){
       setState(() {
-        if(_dropdownValue != selectedValue) {
-          {
-            _dropdownValue = selectedValue;
-            date = DateFormat('MM/dd/yy').parse(selectedValue);
-            _getAvailabilities = Future(() async => await firebaseQueries.getAvailabilitiesOnDate(date));
-          }
-        }
+        dropDownCallback(selectedValue);
       });
     }
   }
@@ -117,56 +102,39 @@ class TutorDisplay extends State<TutorState> { //The home page where you can loo
 
         const SizedBox(height: 20),
 
-        Flexible(child: FutureBuilder<List<TutorAvailabilityCard>>(
-          future: _getAvailabilities,
-          builder: (BuildContext context,  AsyncSnapshot<List<TutorAvailabilityCard>> snapshot){
-            if(snapshot.hasData){
-              List<TutorAvailabilityCard>? availabilities = snapshot.data;
-              return GridView.builder( //Flexible gridview that can take any number of inputs
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, //Two spaces per row
-                    mainAxisSpacing: 15, //This keeps the grid from being right next to each other
-                    crossAxisSpacing: 15,
-                    childAspectRatio: 2.5 //Maintain an aspect ratio so there's roughly four visible at all times
+        Flexible(child: GridView.builder( //Flexible gridview that can take any number of inputs
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, //Two spaces per row
+              mainAxisSpacing: 15, //This keeps the grid from being right next to each other
+              crossAxisSpacing: 15,
+              childAspectRatio: 2.5 //Maintain an aspect ratio so there's roughly four visible at all times
+          ),
+          itemCount: filteredList.length,
+          itemBuilder: (context, index) {
+            return InkWell(
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => TutorProfile(index))),
+              child: Container(
+                decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)), color: Colors.grey),
+                child: Row(
+                    children: [
+                      const SizedBox(width: 10), //Size box for spacing
+                      CircleAvatar(foregroundImage: NetworkImage(filteredList[index].photo),
+                        backgroundColor: Colors.white,), //Avatar
+                      const SizedBox(width: 20,), //More spacing
+                      Align(alignment: Alignment.center, //Text box for the Name, classes, and times
+                          child: Column(children: [SizedBox(height: 15,),
+                            Text(filteredList[index].name, style: TextStyle(fontSize: 18),),
+                            Text(filteredList[index].classes),
+                            Text(filteredList[index].time)]
+                          )
+                      )
+                    ]
                 ),
-                itemCount: availabilities?.length,
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => TutorProfile(availabilities![index]))),
-                    child: Container(
-                      decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)), color: Colors.grey),
-                      child: Row(
-                          children: [
-                            const SizedBox(width: 10), //Size box for spacing
-                            CircleAvatar(foregroundImage: NetworkImage(tutorList[index].photo),
-                              backgroundColor: Colors.white,), //Avatar
-                            const SizedBox(width: 20,), //More spacing
-                            Align(alignment: Alignment.center, //Text box for the Name, classes, and times
-                                child: Column(children: [const SizedBox(height: 15,),
-                                  Text("${availabilities![index].tutor.firstName} ${availabilities[index].tutor.lastName}", style: TextStyle(fontSize: 18),),
-                                  Text(availabilities![index].tutor.coursesTutored!.first),
-                                  Text(availabilities![index].availibility.getAvailableTimeRange())]
-                                  //Text(availabilities![index].getAvailableTimeRange())]
-                                )
-                            )
-                          ]
-                      ),
-                    ),
-                  );
-                },
-              );
-            }else {
-              return const SizedBox(
-                width: 60,
-                height: 60,
-                child: CircularProgressIndicator(),
-              );
-            }
+              ),
+            );
           },
         )
-        ),
-
-
+        )
       ],
       ),
 
