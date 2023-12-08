@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:snhu_tutorlink/Firestore/FirebaseQueries.dart';
+import 'package:snhu_tutorlink/Models/Availability.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:snhu_tutorlink/main.dart';
 import 'package:snhu_tutorlink/Calendar.dart';
-
+import 'package:intl/intl.dart';
 import 'Chat/chat_service.dart';
+import 'Models/Tutor.dart';
 
 
 class ScheduleState extends StatefulWidget {
-
-  const ScheduleState({super.key, required this.title, required this.index});
+  final Tutor tutor;
+  final Appointment appointment;
+  const ScheduleState({super.key, required this.tutor, required this.appointment, required this.title, required this.index});
+  //const ScheduleState({super.key, required this.title, required this.index});
   final String title;
   final int index;
 
   @override
-  State<ScheduleState> createState() => ScheduleAppointment(index);
+  State<ScheduleState> createState() => ScheduleAppointment(index, tutor, appointment);
 }
 
 
@@ -22,8 +27,10 @@ class ScheduleAppointment extends State<ScheduleState> {
   //The home page where you can look at the available tutors
   final TextEditingController details = TextEditingController();
   final ChatService chatService = ChatService();
+  final Appointment appointment;
   @override
   int index;
+  Tutor tutor;
 
   void dropDownCallback(String? selectedValue){
     if(selectedValue is String){
@@ -32,20 +39,61 @@ class ScheduleAppointment extends State<ScheduleState> {
       });
     }
   }
-  ScheduleAppointment(this.index);
+  ScheduleAppointment(this.index, this.tutor, this.appointment);
 
-
-  String timeString = "11:00";
   String locationString = "CETA 230";
   String detailsString = "";
+  String selectedTimeSlot = "";
+
+  List<String> timeslots = [];
+
+  generateTimeSlots(){
+    String startDate = "${appointment.startTime.year}-${appointment.startTime.month}-${appointment.startTime.day}";
+    FirebaseQueries queries = FirebaseQueries();
+    //List<String> unavailableTimeslots = await queries.getUnavailableTimeslots(tutor.tutorReference!, "", startDate);
+    timeslots = [];
+    DateTime current = appointment.startTime;
+    while(current.isBefore(appointment.endTime)){
+      //if(!unavailableTimeslots.contains(DateFormat('h:mm').format(current))) {
+      timeslots.add(DateFormat('h:mm a').format(current));
+      //}
+      current = current.add(const Duration(minutes: 30));
+    }
+  }
+
+  /*Future<List<String>> generateTimeSlots() async {
+    String startDate = "${appointment.startTime.year}-${appointment.startTime.month}-${appointment.startTime.day}";
+    FirebaseQueries queries = FirebaseQueries();
+    //List<String> unavailableTimeslots = await queries.getUnavailableTimeslots(tutor.tutorReference!, "", startDate);
+    timeslots = [];
+    DateTime current = appointment.startTime;
+    while(current.isBefore(appointment.endTime)){
+      //if(!unavailableTimeslots.contains(DateFormat('h:mm').format(current))) {
+        timeslots.add(DateFormat('h:mm a').format(current));
+      //}
+      current = current.add(const Duration(minutes: 30));
+    }
+    return timeslots;
+  }*/
+
+  @override
+  void initState(){
+    super.initState();
+    generateTimeSlots();
+    if(selectedTimeSlot.isNotEmpty) {
+      selectedTimeSlot = timeslots.first;
+    }
+  }
 
   void sendMessage() async {
-    await chatService.sendMessage("UOH7pnFKBzdHqAYyCKpi38nH0FG3",
-        "Hello there! My name is Ryan Black, I would like to meet with ${tutorList[index].name} for tutoring at $timeString at $locationString. "
+    await chatService.sendMessage("${tutor.tutorReference}",
+        "Hello there! My name is Ryan Black, I would like to meet with ${tutor.firstName} ${tutor.lastName}"
+            " for tutoring at $selectedTimeSlot at $locationString. "
             "Here are some details about my meeting: $detailsString");
   }
 
   Widget build(BuildContext context) {
+    locationString = appointment.location ?? "CETA 230";
     return Scaffold(
 
       appBar: AppBar(
@@ -78,32 +126,63 @@ class ScheduleAppointment extends State<ScheduleState> {
               ],
             ),
             SizedBox(height: 15),
-            Text("Schedule an appointment with " + tutorList[index].name,
+            Text("Schedule an appointment with ${tutor.firstName} ${tutor.lastName}",
               style: TextStyle(fontSize: 20),),
-            DropdownButton( //WIP Dropdown button how does this work??
-                underline: Container(height: 2, color: Colors.black),
-                value: timeString,
-                isExpanded: true,
-                items: const[
-                  DropdownMenuItem(value: "11:00", child: Text("11:00"),),
-                  DropdownMenuItem(value: "11:30", child: Text("11:30"),),
-                  DropdownMenuItem(value: "12:00", child: Text("12:00"),),
-                  DropdownMenuItem(value: "12:30", child: Text("12:30"),),
-                ],
-                onChanged: (String? value) {
-                  // This is called when the user selects an item.
-                  setState(() {
-                    timeString = value!;
-                  });
-                },),
+            /*FutureBuilder<List<String>>(
+                future: generateTimeSlots(),
+                builder: (BuildContext context,  AsyncSnapshot<List<String>> snapshot){
+                  if(snapshot.hasData){
+                    return DropdownButton<String>( //WIP Dropdown button how does this work??
+                      underline: Container(height: 2, color: Colors.black),
+                      value: selectedTimeSlot,
+                      isExpanded: true,
+                      items: timeslots.map<DropdownMenuItem<String>>((timeslot){
+                        return(DropdownMenuItem<String>(
+                            value: timeslot,
+                            child: Text(timeslot)
+                        ));
+                      }).toList(),
+                      onChanged: (String? value) {
+                        // This is called when the user selects an item.
+                        setState(() {
+                          selectedTimeSlot = value!;
+                        });
+                      },);
+                  }else{
+                    return DropdownButton( //WIP Dropdown button how does this work??
+                        underline: Container(height: 2, color: Colors.black),
+                      value: "temp",
+                      isExpanded: true,
+                      items: const [
+                        DropdownMenuItem(value: "temp", child: Text("Timeslots"),),
+                      ],
+                      onChanged: null
+                    );
+                  }
+                }
+            ),*/
+            DropdownButton<String>( //WIP Dropdown button how does this work??
+              underline: Container(height: 2, color: Colors.black),
+              value: timeslots[0],
+              isExpanded: true,
+              items: timeslots.map<DropdownMenuItem<String>>((timeslot){
+                return(DropdownMenuItem<String>(
+                    value: timeslot,
+                    child: Text(timeslot)
+                ));
+              }).toList(),
+              onChanged: (String? value) {
+                // This is called when the user selects an item.
+                setState(() {
+                  selectedTimeSlot = value!;
+                });
+              },),
             DropdownButton( //WIP Dropdown button how does this work??
                 underline: Container(height: 2, color: Colors.black),
                 value: locationString,
                 isExpanded: true,
-                items: const[
-                  DropdownMenuItem(value: "CETA 230", child: Text("CETA 230"),),
-                  DropdownMenuItem(
-                    value: "Frost 110", child: Text("Frost 110"),),
+                items: [
+                  DropdownMenuItem(value: locationString, child: Text(locationString),),
                 ],
                 onChanged: (String? value) {
                   // This is called when the user selects an item.
