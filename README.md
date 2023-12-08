@@ -1,16 +1,21 @@
-# new_gradle
+# SNHU-TutorLink #
 
-A new Flutter project.
+SNHU TutorLink is a new and innovative way to find a tutor for classwork!
+Current Tutor scheduling site is archaic, and is only Web Based.
+TutorLink is a more modern way to enhance your learning and improve your grades.
 
-## Getting Started
+## Functionalities: ##
+- App model
+- Improved UI
+- Educators’ profiles
+- One on one booking feature
+- Specific skill set or topic filter
+- Chat feature 
+- App model
+- Improved UI
+- Educators’ profiles
+- One on one booking feature
+- Specific skill set or topic filter
+- Chat feature 
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+https://docs.google.com/presentation/d/1Fz9tKWW5v_jZQgacv2A3zzMfkHhsMXKZuGysIAe4hC8/edit#slide=id.g2828a645358_0_69

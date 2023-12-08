@@ -1,12 +1,17 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:snhu_tutorlink/Message_History.dart';
 import 'package:snhu_tutorlink/Ryan_Message_History.dart';
 import 'package:snhu_tutorlink/TutorDisplay.dart';
-import 'login.dart';
 import 'settings.dart';
 import 'userData.dart';
-import 'package:provider/provider.dart';
+import 'Ryan_Chat_Room.dart';
+import 'login.dart';
+import 'dart:developer';
+
 
 
 void main() async {
@@ -83,6 +88,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+
+  final FirebaseFirestore firestone = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   void dropDownCallback(String? selectedValue){
     if(selectedValue is String){
       setState(() {
@@ -90,25 +98,69 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     }
   }
+
+
+  Widget buildList(BuildContext context){
+    return StreamBuilder<QuerySnapshot>(stream: FirebaseFirestore.instance.collection('ryan_chat_room').doc("y0vBL0hfDJS5dbmC059ehvL1vtb2_zy66aqjq5uejgHnkvwgVJ9GQV2g2").collection('messages').where('isSeen', isEqualTo: false).where('recieverId', isEqualTo: _auth.currentUser!.uid).limit(3).snapshots(),
+        builder: (context, snapshot){
+          if (snapshot.hasError){
+            return const Text("Error");
+          }
+          if (snapshot.connectionState == ConnectionState.waiting){
+            return const Text("Loading...");
+          }
+          return ListView(
+              shrinkWrap: true,
+              children: snapshot.data!.docs.map<Widget>((doc) => buildNotificationListItem(doc)).toList()
+          );
+        });
+  }
+
+
+  Widget buildNotificationListItem(DocumentSnapshot document){
+    Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+    if (_auth.currentUser!.uid != data['senderId'] ) {
+      return ListTile(
+        title: Text(data['message']),
+        onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => RyanChatRoom(
+                  recieverUserEmail: data['senderEmail'],
+                  recieverUserID: data['senderId'])));
+        },
+      );
+
+    } else {
+      return Container();
+    }
+  }
+
+
   final String _dropdownValue = "11/7/24"; //WIP Dropdown menu
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: AppBar(
-        title: const Align(
+        title: Align(
           alignment: Alignment.bottomLeft,
-          child: Image(
-            image: NetworkImage(
-                "https://dlmrue3jobed1.cloudfront.net/uploads/school/SouthernNewHampshireUniversity/snhu_initials_rgb_pos.png"),
-            width: 300,
-            height: 100,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MyHomePage(title: "")),
+              );
+            },
+            child: Image(
+              image: NetworkImage(
+                  "https://dlmrue3jobed1.cloudfront.net/uploads/school/SouthernNewHampshireUniversity/snhu_initials_rgb_pos.png"),
+              width: 300,
+              height: 100,
+            ),
           ),
         ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(color: Colors.blue),
-        ),
+        flexibleSpace: Container(decoration: BoxDecoration(color: Color(0xff009DEA))),
       ),
+
       body: Column(
         children: [
           Align(
@@ -125,11 +177,18 @@ class _MyHomePageState extends State<MyHomePage> {
               style: TextStyle(fontSize: 16),
             ),
           ),
-          // ... Rest of your UI content ...
+          Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              "Your most recent messages:",
+              style: TextStyle(fontSize: 32),
+            ),
+          ),
+          buildList(context)
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.yellow,
+        backgroundColor: Color(0xffFDB913),
         showSelectedLabels: false,
         showUnselectedLabels: false,
         items: const [
@@ -142,7 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
             // Navigate to the settings page when the "settings" icon is tapped.
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Settings()),
+              MaterialPageRoute(builder: (context) => const SettingsPage()),
             );
           }
           if (index == 1) { // Index 1 corresponds to the "Chat" icon
