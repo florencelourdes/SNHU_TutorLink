@@ -1,10 +1,6 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
-import 'package:snhu_tutorlink/userData.dart';
 import 'main.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -33,7 +29,6 @@ class _LoginScreenState extends State<LoginScreen> {
         'email' : credentials.user!.email,
       }, SetOptions(merge: true));
       // If authentication is successful, you can navigate to the home screen.
-      Provider.of<UserData>(context, listen: false).loadProfileImage();
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MyHomePage(title: '')),

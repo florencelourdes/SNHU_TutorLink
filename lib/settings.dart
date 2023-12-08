@@ -1,4 +1,3 @@
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +5,6 @@ import 'login.dart';
 import 'userData.dart';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:path/path.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -24,21 +22,6 @@ class _SettingsState extends State<Settings> {
     if (pickedImage != null) {
       // Upload the selected image to Firebase Storage
       // ...
-
-      final FirebaseAuth auth = FirebaseAuth.instance;
-
-      try {
-        final File file = File(pickedImage.path);
-        final String fileName = basename(file.path);
-        final destination = 'public/images/${auth.currentUser?.uid ?? ""}';
-
-        final ref = FirebaseStorage.instance
-            .ref()
-            .child(destination);
-        await ref.putFile(file);
-      } on FirebaseException catch (e) {
-        print("Failed with error '${e.code}': ${e.message}");
-      }
 
       // Get the download URL of the uploaded image
       String downloadUrl = '...'; // Replace with actual download URL
@@ -74,7 +57,7 @@ class _SettingsState extends State<Settings> {
             child: CircleAvatar(
               radius: 20,
               backgroundImage: userData.image != null
-                  ? NetworkImage(userData.imageUrl!)/*FileImage(userData.image!)*/
+                  ? FileImage(userData.image!)
                   : NetworkImage('https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Windows_10_Default_Profile_Picture.svg/2048px-Windows_10_Default_Profile_Picture.svg.png') as ImageProvider<Object>,
             ),
           ),

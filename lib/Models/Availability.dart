@@ -7,7 +7,6 @@ class Availability{
   final DateTime endTime;
   final String location;
   final String tutorReference;
-  final String docRef;
 
   //If session repeats
   final bool isRepeating;
@@ -22,7 +21,6 @@ class Availability{
     required this.tutorReference,
     required this.isRepeating,
     required this.endDate,
-    required this.docRef,
     this.dateAbbreviation
   });
 
@@ -40,10 +38,8 @@ class Availability{
         tutorReference: data?['Tutor'],
 
         isRepeating: data?['IsRepeating'] ?? false,
-        endDate: (data?['End_Time'] as Timestamp? ?? data?['Start_Time'] as Timestamp).toDate(),
-        dateAbbreviation: data?['DateAbbreviation'],
-        docRef: snapshot.id
-
+        endDate: (data?['End_Time'] as Timestamp).toDate(),
+        dateAbbreviation: data?['DateAbbreviation']
     );
   }
 
