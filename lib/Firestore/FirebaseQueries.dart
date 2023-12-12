@@ -128,11 +128,40 @@ class FirebaseQueries{
     return tutorAvailabilityCards;
   }
 
-  Future<List<String>> getUnavailableTimeslots(String tutorID, String docRef, String date) async{
+  Future<List<String>> getUnavailableTimeslots(String docRef, String date) async{
     List<String> unavailableTimeslots = [];
-    final ref = db.collection("Availability").doc(docRef);
-
+    final ref = db.collection("Availability").doc(docRef).collection("Appointment").doc(date);
+    await ref.get().then((DocumentSnapshot doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      List<dynamic> timeslots = data['BookedTimeSlots'];
+      for(Map timeslot in timeslots){
+        unavailableTimeslots.add(timeslot["timeslot"]);
+      }
+    }, onError: (e) => print("Error getting document: $e")
+    );
     return unavailableTimeslots;
+  }
+
+  Future<bool> BookAppointment(String docRef, String date, String time) async{
+    bool isBooked = false;
+    List<String> unavailableTimeSlots = await getUnavailableTimeslots(docRef, date);
+    //Dont book the appointment if timeslot is taken
+    if(unavailableTimeSlots.contains(time)){
+      return false;
+    }
+    final ref = db.collection("Availability").doc(docRef).collection("Appointment").doc(date);
+    await ref.get().then((DocumentSnapshot doc) async {
+      if(!doc.exists || doc.get('BookedTimeSlots') == null){
+        await ref.set({"BookedTimeSlots": []});
+      }
+
+      await ref.update({"BookedTimeSlots": FieldValue.arrayUnion([time])});
+      isBooked = true;
+
+    }, onError: (e) => print("Error getting document: $e")
+    );
+
+    return isBooked;
   }
 
 }

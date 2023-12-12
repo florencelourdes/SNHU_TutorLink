@@ -122,6 +122,7 @@ List<Appointment> getAppointments(){
           subject: appointment.location,
           location: appointment.location,
           color: Colors.blue,
+          notes: appointment.docRef,
           recurrenceRule: '${'FREQ=WEEKLY;BYDAY=' + (appointment.dateAbbreviation ?? "") +
               ';UNTIL='+DateFormat('yyyyMMdd').format(appointment.endDate)}'
 
@@ -132,7 +133,8 @@ List<Appointment> getAppointments(){
           endTime: appointment.endTime,
           subject: appointment.location,
           location: appointment.location,
-          color: Colors.blue
+          color: Colors.blue,
+          notes: appointment.docRef
       ));
     }
 

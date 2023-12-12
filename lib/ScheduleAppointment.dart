@@ -50,13 +50,13 @@ class ScheduleAppointment extends State<ScheduleState> {
   Future<List<String>> generateTimeSlots() async {
     String startDate = "${appointment.startTime.year}-${appointment.startTime.month}-${appointment.startTime.day}";
     FirebaseQueries queries = FirebaseQueries();
-    //List<String> unavailableTimeslots = await queries.getUnavailableTimeslots(tutor.tutorReference!, "", startDate);
+    List<String> unavailableTimeslots = await queries.getUnavailableTimeslots(appointment.notes ?? "", startDate);
     timeslots = [];
     DateTime current = appointment.startTime;
     while(current.isBefore(appointment.endTime)){
-      //if(!unavailableTimeslots.contains(DateFormat('h:mm').format(current))) {
+      if(!unavailableTimeslots.contains(DateFormat('h:mm').format(current))) {
         timeslots.add(DateFormat('h:mm a').format(current));
-      //}
+      }
       current = current.add(const Duration(minutes: 30));
     }
 
@@ -70,10 +70,6 @@ class ScheduleAppointment extends State<ScheduleState> {
   @override
   void initState(){
     super.initState();
-    //generateTimeSlots();
-    //if(selectedTimeSlot.isNotEmpty) {
-     // selectedTimeSlot = timeslots.first;
-    //}
   }
 
   void sendMessage() async {
