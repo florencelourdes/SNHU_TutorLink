@@ -55,7 +55,7 @@ class TutorProfile extends StatelessWidget {
   Widget build(BuildContext context){
     ScheduleList = [];
     final FirebaseQueries queries = FirebaseQueries();
-    final Future<List<Availability>> t = Future(() async => await queries.getTutorAvailabilities(tutor.tutor.tutorReference ?? ""));
+    final Future<List<Availability>> availableTimeslots = Future(() async => await queries.getTutorAvailabilities(tutor.tutor.tutorReference ?? ""));
     return Scaffold(
       appBar: AppBar(
         title: Align( //Title Bar
@@ -89,12 +89,13 @@ class TutorProfile extends StatelessWidget {
               )
           ),
           Expanded(child: FutureBuilder<List<Availability>>(
-              future: t,
+              future: availableTimeslots,
               builder: (BuildContext context,  AsyncSnapshot<List<Availability>> snapshot){
                 List<Availability> tempData = snapshot.data ?? [];
                 if(snapshot.hasData){
                   for(Availability item in tempData){
-                    ScheduleList.add(Schedule(item.isRepeating, item.startTime, item.endTime, item.endDate, item.location, item.dateAbbreviation ?? "", item.location));
+                    ScheduleList.add(Schedule(item.isRepeating, item.startTime, item.endTime, item.endDate,
+                        item.location, item.dateAbbreviation ?? "", item.location));
                   }
                   return SfCalendar(
                       showDatePickerButton: true,
@@ -103,7 +104,8 @@ class TutorProfile extends StatelessWidget {
                       onTap: (details) {
                         if (details.targetElement == CalendarElement.appointment){
                           Appointment app = details.appointments![0];
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> ScheduleState(title: "", tutor: tutor.tutor, appointment: app, index: 0)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> ScheduleState(title: "",
+                              tutor: tutor.tutor, appointment: app, index: 0)));
                         }
                       });
                 }else{
@@ -143,8 +145,8 @@ List<Appointment> getAppointments(){
           subject: appointment.description,
           location: appointment.location,
           color: Colors.blue,
-          //recurrenceRule: '${'FREQ=WEEKLY;BYDAY=' + appointment.frequency + ';UNTIL=20240428'}',
-          recurrenceRule: '${'FREQ=WEEKLY;BYDAY=' + appointment.frequency + ';UNTIL='+DateFormat('yyyyMMdd').format(appointment.endDate)}'
+          recurrenceRule: '${'FREQ=WEEKLY;BYDAY=' + appointment.frequency +
+              ';UNTIL='+DateFormat('yyyyMMdd').format(appointment.endDate)}'
 
       ));
     }else{
