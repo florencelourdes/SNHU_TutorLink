@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:snhu_tutorlink/Firestore/FirebaseQueries.dart';
 import 'package:snhu_tutorlink/Models/Availability.dart';
@@ -7,6 +8,7 @@ import 'package:snhu_tutorlink/Calendar.dart';
 import 'package:intl/intl.dart';
 import 'Chat/chat_service.dart';
 import 'Models/Tutor.dart';
+import 'package:intl/intl.dart';
 
 
 class ScheduleState extends StatefulWidget {
@@ -169,21 +171,29 @@ class ScheduleAppointment extends State<ScheduleState> {
                 detailsString = value!;
               });
             },),
-            ElevatedButton(onPressed: () {
-              showDialog(context: context,
-                builder: (BuildContext context) => AlertDialog(
-                  title: Text("Confirmed!"),
-                  content: Text("Your appointment with ${tutor.firstName} ${tutor.lastName} has been confirmed!"),
-                  actions: [
-                    ElevatedButton(onPressed: () {
-                      sendMessage();
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyHomePage(title: "")));
-                    }
+            ElevatedButton(onPressed: () async {
+              FirebaseQueries queries = FirebaseQueries();
+              String startDate = "${appointment.startTime.year}-${appointment.startTime.month}-${appointment.startTime.day}";
+              bool hasProssesssed = await queries.BookAppointment(appointment.notes ?? "", startDate, selectedTimeSlot.substring(0, selectedTimeSlot.length-3));
+              if(hasProssesssed){
+                showDialog(context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: Text("Confirmed!"),
+                      content: Text("Your appointment with ${tutor.firstName} ${tutor.lastName} has been confirmed!"),
+                      actions: [
+                        ElevatedButton(onPressed: () {
+                          sendMessage();
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyHomePage(title: "")));
+                        }
 
-                        ,
-                        child: Text("Return to home"))
-                  ],
-                ));
+                            ,
+                            child: Text("Return to home"))
+                      ],
+                    ));
+              }else{
+
+              }
+
             },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                 child: Text("SCHEDULE"))

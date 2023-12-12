@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:snhu_tutorlink/Models/TutorAvailabilityCard.dart';
 import 'package:intl/intl.dart';
 
@@ -132,10 +133,12 @@ class FirebaseQueries{
     List<String> unavailableTimeslots = [];
     final ref = db.collection("Availability").doc(docRef).collection("Appointment").doc(date);
     await ref.get().then((DocumentSnapshot doc) {
-      final data = doc.data() as Map<String, dynamic>;
-      List<dynamic> timeslots = data['BookedTimeSlots'];
-      for(Map timeslot in timeslots){
-        unavailableTimeslots.add(timeslot["timeslot"]);
+      if(doc.exists) {
+        final data = doc.data() as Map<String, dynamic>;
+        List<dynamic> timeslots = data['BookedTimeSlots'];
+        for (Map timeslot in timeslots) {
+          unavailableTimeslots.add(timeslot["timeslot"]);
+        }
       }
     }, onError: (e) => print("Error getting document: $e")
     );
@@ -154,9 +157,14 @@ class FirebaseQueries{
       if(!doc.exists || doc.get('BookedTimeSlots') == null){
         await ref.set({"BookedTimeSlots": []});
       }
-
-      await ref.update({"BookedTimeSlots": FieldValue.arrayUnion([time])});
-      isBooked = true;
+      FirebaseAuth auth = FirebaseAuth.instance;
+      if(auth.currentUser?.uid != null) {
+        await ref.update({
+          "BookedTimeSlots": FieldValue.arrayUnion(
+              [{"timeslot": time, "userId": auth.currentUser!.uid}])
+        });
+        isBooked = true;
+      }
 
     }, onError: (e) => print("Error getting document: $e")
     );
