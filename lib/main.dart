@@ -101,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   Widget buildList(BuildContext context){
-    return StreamBuilder<QuerySnapshot>(stream: FirebaseFirestore.instance.collection('ryan_chat_room').doc("y0vBL0hfDJS5dbmC059ehvL1vtb2_zy66aqjq5uejgHnkvwgVJ9GQV2g2").collection('messages').where('isSeen', isEqualTo: false).where('recieverId', isEqualTo: _auth.currentUser!.uid).limit(3).snapshots(),
+    return StreamBuilder<QuerySnapshot>(stream: FirebaseFirestore.instance.collection('ryan_chat_room').doc("Aq7HpHo76GZSLBukw30FoAzZmqC3_sWpxSNetwUOaQccJ15fa7ZozTAI3").collection('messages').where('isSeen', isEqualTo: false).where('recieverId', isEqualTo: _auth.currentUser!.uid).limit(3).snapshots(),
         builder: (context, snapshot){
           if (snapshot.hasError){
             return const Text("Error");
@@ -111,6 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
           return ListView(
               shrinkWrap: true,
+              padding: EdgeInsets.all(4),
               children: snapshot.data!.docs.map<Widget>((doc) => buildNotificationListItem(doc)).toList()
           );
         });
@@ -119,9 +120,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget buildNotificationListItem(DocumentSnapshot document){
     Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+
+    log(data['senderEmail']);
     if (_auth.currentUser!.uid != data['senderId'] ) {
-      return ListTile(
-        title: Text(data['message']),
+      return InkWell(
+        child: Container(
+          child: Column(
+            children: [
+              Text(data['senderEmail']),
+              SizedBox(height: 4,),
+              Text(data['message'], style: TextStyle(fontSize: 20), overflow: TextOverflow.ellipsis, maxLines: 1)
+            ],
+          ),
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: BorderRadius.circular(12)
+          ),
+        ),
         onTap: () {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => RyanChatRoom(

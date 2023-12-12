@@ -87,7 +87,7 @@ class ScheduleAppointment extends State<ScheduleState> {
 
   void sendMessage() async {
     await chatService.sendMessage("${tutor.tutorReference}",
-        "Hello there! My name is Ryan Black, I would like to meet with ${tutor.firstName} ${tutor.lastName}"
+        "Hello there! I would like to meet with ${tutor.firstName} ${tutor.lastName}"
             " for tutoring at $selectedTimeSlot at $locationString. "
             "Here are some details about my meeting: $detailsString");
   }

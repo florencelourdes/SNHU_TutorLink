@@ -158,8 +158,8 @@ class TutorDisplay extends State<TutorState> { //The home page where you can loo
                               backgroundColor: Colors.white,), //Avatar
                             const SizedBox(width: 20,), //More spacing
                             Align(alignment: Alignment.center, //Text box for the Name, classes, and times
-                                child: Column(children: [const SizedBox(height: 15,),
-                                  Text("${availabilities![index].tutor.firstName} ${availabilities[index].tutor.lastName}", style: TextStyle(fontSize: 18),),
+                                child: Column(children: [const SizedBox(height: 10,),
+                                  Text("${availabilities![index].tutor.firstName} ${availabilities[index].tutor.lastName}", style: TextStyle(fontSize: 15),),
                                   Text(availabilities![index].tutor.coursesTutored!.first),
                                   Text(availabilities![index].availibility.getAvailableTimeRange())]
                                   //Text(availabilities![index].getAvailableTimeRange())]
@@ -173,8 +173,8 @@ class TutorDisplay extends State<TutorState> { //The home page where you can loo
               );
             }else {
               return const SizedBox(
-                width: 60,
-                height: 60,
+                width: 70,
+                height: 70,
                 child: CircularProgressIndicator(),
               );
             }
