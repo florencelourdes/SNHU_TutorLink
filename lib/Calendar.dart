@@ -8,28 +8,7 @@ import 'package:intl/intl.dart';
 
 import 'Models/TutorAvailabilityCard.dart';
 
-class Schedule {
-  late bool isRepeating;
-  late DateTime startDate;
-  late DateTime endTime;
-  late DateTime endDate;
-  late String description;
-  late String frequency;
-  late String location;
-  Schedule(bool isRepeating, DateTime startInput, DateTime endInput, DateTime endDate,
-      String descInput, String freqInput, String location)
-  {
-    this.endDate = endDate;
-    this.isRepeating = isRepeating;
-    startDate = startInput;
-    endTime = endInput;
-    description = descInput;
-    frequency = freqInput;
-    this.location = location;
-  }
-}
-
-List<Schedule> ScheduleList = [];
+List<Availability> ScheduleList = [];
 
 /*List<Schedule> ScheduleList = [
   //DateTime: year, month, day, hour, minute, second
@@ -48,10 +27,9 @@ List<Schedule> ScheduleList = [];
 int termEndDate = 20240428;
 class TutorProfile extends StatelessWidget {
   @override
-  //int index;
   late TutorAvailabilityCard tutor;
-  //TutorProfile(this.index, {super.key});
   TutorProfile(this.tutor, {super.key});
+
   Widget build(BuildContext context){
     ScheduleList = [];
     final FirebaseQueries queries = FirebaseQueries();
@@ -94,8 +72,7 @@ class TutorProfile extends StatelessWidget {
                 List<Availability> tempData = snapshot.data ?? [];
                 if(snapshot.hasData){
                   for(Availability item in tempData){
-                    ScheduleList.add(Schedule(item.isRepeating, item.startTime, item.endTime, item.endDate,
-                        item.location, item.dateAbbreviation ?? "", item.location));
+                    ScheduleList.add(item);
                   }
                   return SfCalendar(
                       showDatePickerButton: true,
@@ -137,23 +114,23 @@ class TutorProfile extends StatelessWidget {
 
 List<Appointment> getAppointments(){
   List<Appointment> meetings = <Appointment>[];
-  for(Schedule appointment in ScheduleList){
+  for(Availability appointment in ScheduleList){
     if(appointment.isRepeating){
       meetings.add(Appointment(
-          startTime: appointment.startDate,
+          startTime: appointment.startTime,
           endTime: appointment.endTime,
-          subject: appointment.description,
+          subject: appointment.location,
           location: appointment.location,
           color: Colors.blue,
-          recurrenceRule: '${'FREQ=WEEKLY;BYDAY=' + appointment.frequency +
+          recurrenceRule: '${'FREQ=WEEKLY;BYDAY=' + (appointment.dateAbbreviation ?? "") +
               ';UNTIL='+DateFormat('yyyyMMdd').format(appointment.endDate)}'
 
       ));
     }else{
       meetings.add(Appointment(
-          startTime: appointment.startDate,
+          startTime: appointment.startTime,
           endTime: appointment.endTime,
-          subject: appointment.description,
+          subject: appointment.location,
           location: appointment.location,
           color: Colors.blue
       ));
