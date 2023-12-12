@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:snhu_tutorlink/Firestore/FirebaseQueries.dart';
 import 'package:snhu_tutorlink/Models/Availability.dart';
+import 'package:snhu_tutorlink/settings.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:snhu_tutorlink/main.dart';
 import 'package:snhu_tutorlink/ScheduleAppointment.dart';
 import 'package:intl/intl.dart';
 
 import 'Models/TutorAvailabilityCard.dart';
+import 'Ryan_Message_History.dart';
+import 'TutorDisplay.dart';
 
 List<Availability> ScheduleList = [];
 
@@ -106,7 +109,30 @@ class TutorProfile extends StatelessWidget {
           BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: ""),
           BottomNavigationBarItem(icon: Icon(Icons.chat), label: ""),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: "")
-        ],),
+        ],
+        onTap: (int index) {
+          if (index == 2) { // Index 2 corresponds to the "settings" icon
+            // Navigate to the settings page when the "settings" icon is tapped.
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SettingsPage()),
+            );
+          }
+          if (index == 1) { // Index 1 corresponds to the "Chat" icon
+            // Navigate to the ChatScreen when the "Chat" icon is tapped.
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const RyanMessageState()),
+            );
+          }
+          if(index == 0){
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const TutorState(title: "")), //change it to your setting page
+            );
+          }
+        },
+      ),
     );
   }
 
