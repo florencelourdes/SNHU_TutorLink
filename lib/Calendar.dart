@@ -53,6 +53,7 @@ class TutorProfile extends StatelessWidget {
   //TutorProfile(this.index, {super.key});
   TutorProfile(this.tutor, {super.key});
   Widget build(BuildContext context){
+    ScheduleList = [];
     final FirebaseQueries queries = FirebaseQueries();
     final Future<List<Availability>> t = Future(() async => await queries.getTutorAvailabilities(tutor.tutor.tutorReference ?? ""));
     return Scaffold(
