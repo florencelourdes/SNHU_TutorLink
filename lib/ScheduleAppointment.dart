@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:snhu_tutorlink/Firestore/FirebaseQueries.dart';
 import 'package:snhu_tutorlink/Models/Availability.dart';
@@ -7,6 +8,7 @@ import 'package:snhu_tutorlink/Calendar.dart';
 import 'package:intl/intl.dart';
 import 'Chat/chat_service.dart';
 import 'Models/Tutor.dart';
+import 'package:intl/intl.dart';
 
 
 class ScheduleState extends StatefulWidget {
@@ -47,42 +49,29 @@ class ScheduleAppointment extends State<ScheduleState> {
 
   List<String> timeslots = [];
 
-  generateTimeSlots(){
+  Future<List<String>> generateTimeSlots() async {
     String startDate = "${appointment.startTime.year}-${appointment.startTime.month}-${appointment.startTime.day}";
     FirebaseQueries queries = FirebaseQueries();
-    //List<String> unavailableTimeslots = await queries.getUnavailableTimeslots(tutor.tutorReference!, "", startDate);
+    List<String> unavailableTimeslots = await queries.getUnavailableTimeslots(appointment.notes ?? "", startDate);
     timeslots = [];
     DateTime current = appointment.startTime;
     while(current.isBefore(appointment.endTime)){
-      //if(!unavailableTimeslots.contains(DateFormat('h:mm').format(current))) {
-      timeslots.add(DateFormat('h:mm a').format(current));
-      //}
-      current = current.add(const Duration(minutes: 30));
-    }
-  }
-
-  /*Future<List<String>> generateTimeSlots() async {
-    String startDate = "${appointment.startTime.year}-${appointment.startTime.month}-${appointment.startTime.day}";
-    FirebaseQueries queries = FirebaseQueries();
-    //List<String> unavailableTimeslots = await queries.getUnavailableTimeslots(tutor.tutorReference!, "", startDate);
-    timeslots = [];
-    DateTime current = appointment.startTime;
-    while(current.isBefore(appointment.endTime)){
-      //if(!unavailableTimeslots.contains(DateFormat('h:mm').format(current))) {
+      if(!unavailableTimeslots.contains(DateFormat('h:mm').format(current))) {
         timeslots.add(DateFormat('h:mm a').format(current));
-      //}
+      }
       current = current.add(const Duration(minutes: 30));
     }
+
+    if(selectedTimeSlot == ""){
+      selectedTimeSlot = timeslots.first;
+    }
+
     return timeslots;
-  }*/
+  }
 
   @override
   void initState(){
     super.initState();
-    generateTimeSlots();
-    if(selectedTimeSlot.isNotEmpty) {
-      selectedTimeSlot = timeslots.first;
-    }
   }
 
   void sendMessage() async {
@@ -128,13 +117,13 @@ class ScheduleAppointment extends State<ScheduleState> {
             SizedBox(height: 15),
             Text("Schedule an appointment with ${tutor.firstName} ${tutor.lastName}",
               style: TextStyle(fontSize: 20),),
-            /*FutureBuilder<List<String>>(
+            FutureBuilder<List<String>>(
                 future: generateTimeSlots(),
                 builder: (BuildContext context,  AsyncSnapshot<List<String>> snapshot){
                   if(snapshot.hasData){
                     return DropdownButton<String>( //WIP Dropdown button how does this work??
                       underline: Container(height: 2, color: Colors.black),
-                      value: selectedTimeSlot,
+                      value: selectedTimeSlot /*timeslots.first*/,
                       isExpanded: true,
                       items: timeslots.map<DropdownMenuItem<String>>((timeslot){
                         return(DropdownMenuItem<String>(
@@ -160,23 +149,7 @@ class ScheduleAppointment extends State<ScheduleState> {
                     );
                   }
                 }
-            ),*/
-            DropdownButton<String>( //WIP Dropdown button how does this work??
-              underline: Container(height: 2, color: Colors.black),
-              value: timeslots[0],
-              isExpanded: true,
-              items: timeslots.map<DropdownMenuItem<String>>((timeslot){
-                return(DropdownMenuItem<String>(
-                    value: timeslot,
-                    child: Text(timeslot)
-                ));
-              }).toList(),
-              onChanged: (String? value) {
-                // This is called when the user selects an item.
-                setState(() {
-                  selectedTimeSlot = value!;
-                });
-              },),
+            ),
             DropdownButton( //WIP Dropdown button how does this work??
                 underline: Container(height: 2, color: Colors.black),
                 value: locationString,
@@ -198,21 +171,29 @@ class ScheduleAppointment extends State<ScheduleState> {
                 detailsString = value!;
               });
             },),
-            ElevatedButton(onPressed: () {
-              showDialog(context: context,
-                builder: (BuildContext context) => AlertDialog(
-                  title: Text("Confirmed!"),
-                  content: Text("Your appointment with " + tutorList[index].name + " has been confirmed!"),
-                  actions: [
-                    ElevatedButton(onPressed: () {
-                      sendMessage();
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyHomePage(title: "")));
-                    }
+            ElevatedButton(onPressed: () async {
+              FirebaseQueries queries = FirebaseQueries();
+              String startDate = "${appointment.startTime.year}-${appointment.startTime.month}-${appointment.startTime.day}";
+              bool hasProssesssed = await queries.BookAppointment(appointment.notes ?? "", startDate, selectedTimeSlot.substring(0, selectedTimeSlot.length-3));
+              if(hasProssesssed){
+                showDialog(context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: Text("Confirmed!"),
+                      content: Text("Your appointment with ${tutor.firstName} ${tutor.lastName} has been confirmed!"),
+                      actions: [
+                        ElevatedButton(onPressed: () {
+                          sendMessage();
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyHomePage(title: "")));
+                        }
 
-                        ,
-                        child: Text("Return to home"))
-                  ],
-                ));
+                            ,
+                            child: Text("Return to home"))
+                      ],
+                    ));
+              }else{
+
+              }
+
             },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                 child: Text("SCHEDULE"))

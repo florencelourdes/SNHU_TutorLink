@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:snhu_tutorlink/Models/TutorAvailabilityCard.dart';
 import 'package:intl/intl.dart';
 
@@ -128,11 +129,47 @@ class FirebaseQueries{
     return tutorAvailabilityCards;
   }
 
-  Future<List<String>> getUnavailableTimeslots(String tutorID, String docRef, String date) async{
+  Future<List<String>> getUnavailableTimeslots(String docRef, String date) async{
     List<String> unavailableTimeslots = [];
-    final ref = db.collection("Availability").doc(docRef);
-
+    final ref = db.collection("Availability").doc(docRef).collection("Appointment").doc(date);
+    await ref.get().then((DocumentSnapshot doc) {
+      if(doc.exists) {
+        final data = doc.data() as Map<String, dynamic>;
+        List<dynamic> timeslots = data['BookedTimeSlots'];
+        for (Map timeslot in timeslots) {
+          unavailableTimeslots.add(timeslot["timeslot"]);
+        }
+      }
+    }, onError: (e) => print("Error getting document: $e")
+    );
     return unavailableTimeslots;
+  }
+
+  Future<bool> BookAppointment(String docRef, String date, String time) async{
+    bool isBooked = false;
+    List<String> unavailableTimeSlots = await getUnavailableTimeslots(docRef, date);
+    //Dont book the appointment if timeslot is taken
+    if(unavailableTimeSlots.contains(time)){
+      return false;
+    }
+    final ref = db.collection("Availability").doc(docRef).collection("Appointment").doc(date);
+    await ref.get().then((DocumentSnapshot doc) async {
+      if(!doc.exists || doc.get('BookedTimeSlots') == null){
+        await ref.set({"BookedTimeSlots": []});
+      }
+      FirebaseAuth auth = FirebaseAuth.instance;
+      if(auth.currentUser?.uid != null) {
+        await ref.update({
+          "BookedTimeSlots": FieldValue.arrayUnion(
+              [{"timeslot": time, "userId": auth.currentUser!.uid}])
+        });
+        isBooked = true;
+      }
+
+    }, onError: (e) => print("Error getting document: $e")
+    );
+
+    return isBooked;
   }
 
 }
