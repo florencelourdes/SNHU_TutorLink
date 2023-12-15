@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:snhu_tutorlink/Firestore/FirebaseQueries.dart';
+import 'package:snhu_tutorlink/NavAppBar.dart';
 import 'package:snhu_tutorlink/settings.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:snhu_tutorlink/main.dart';
@@ -85,19 +86,7 @@ class ScheduleAppointment extends State<ScheduleState> {
   Widget build(BuildContext context) {
     locationString = appointment.location ?? "CETA 230";
     return Scaffold(
-
-      appBar: AppBar(
-        title: Align( //Title Bar
-            alignment: Alignment.bottomLeft,
-            child: Image(image: NetworkImage(
-                "https://dlmrue3jobed1.cloudfront.net/uploads/school/SouthernNewHampshireUniversity/snhu_initials_rgb_pos.png"),
-              width: 300,
-              height: 100,)
-        ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(color: Color(0xff009DEA)),),),
-
-
+      appBar: const NavAppBar(),
       body: SingleChildScrollView(
         child: Column(
           children: [

@@ -8,6 +8,7 @@ import 'package:snhu_tutorlink/ScheduleAppointment.dart';
 import 'package:intl/intl.dart';
 
 import 'Models/TutorAvailabilityCard.dart';
+import 'NavAppBar.dart';
 import 'Ryan_Message_History.dart';
 import 'TutorDisplay.dart';
 
@@ -38,16 +39,7 @@ class TutorProfile extends StatelessWidget {
     final FirebaseQueries queries = FirebaseQueries();
     final Future<List<Availability>> availableTimeslots = Future(() async => await queries.getTutorAvailabilities(tutor.tutor.tutorReference ?? ""));
     return Scaffold(
-      appBar: AppBar(
-        title: Align( //Title Bar
-            alignment: Alignment.bottomLeft,
-            child: Image (image: NetworkImage("https://dlmrue3jobed1.cloudfront.net/uploads/school/SouthernNewHampshireUniversity/snhu_initials_rgb_pos.png"),
-              width: 300,
-              height: 100,)
-        ),
-        flexibleSpace: Container(decoration: BoxDecoration(color: Color(0xff009DEA)),),),
-
-
+      appBar: const NavAppBar(),
       body: Column(
         children: [
           Align(

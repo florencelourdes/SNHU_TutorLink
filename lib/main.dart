@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:snhu_tutorlink/Message_History.dart';
+import 'package:snhu_tutorlink/NavAppBar.dart';
 import 'package:snhu_tutorlink/Ryan_Message_History.dart';
 import 'package:snhu_tutorlink/TutorDisplay.dart';
 import 'settings.dart';
@@ -155,27 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Align(
-          alignment: Alignment.bottomLeft,
-          child: InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MyHomePage(title: "")),
-              );
-            },
-            child: Image(
-              image: NetworkImage(
-                  "https://dlmrue3jobed1.cloudfront.net/uploads/school/SouthernNewHampshireUniversity/snhu_initials_rgb_pos.png"),
-              width: 300,
-              height: 100,
-            ),
-          ),
-        ),
-        flexibleSpace: Container(decoration: BoxDecoration(color: Color(0xff009DEA))),
-      ),
-
+      appBar: const NavAppBar(),
       body: Column(
         children: [
           Align(

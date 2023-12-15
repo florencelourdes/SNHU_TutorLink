@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:snhu_tutorlink/NavAppBar.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:snhu_tutorlink/main.dart';
 import 'package:snhu_tutorlink/Calendar.dart';
@@ -80,28 +81,7 @@ class TutorDisplay extends State<TutorState> { //The home page where you can loo
   String _dropdownValue = "11/7/24"; //WIP Dropdown menu
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Align(
-          alignment: Alignment.bottomLeft,
-          child: InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MyHomePage(title: "")),
-              );
-            },
-            child: Image(
-              image: NetworkImage(
-                  "https://dlmrue3jobed1.cloudfront.net/uploads/school/SouthernNewHampshireUniversity/snhu_initials_rgb_pos.png"),
-              width: 300,
-              height: 100,
-            ),
-          ),
-        ),
-        flexibleSpace: Container(decoration: BoxDecoration(color: Color(0xff009DEA))),
-      ),
-
-
+      appBar: const NavAppBar(),
       body: Column(children: [ //Body code
         const Align(alignment: Alignment.topLeft, child: Text("Drop in Schedule", style: TextStyle(fontSize: 32),),),
         const Align(alignment: Alignment.topLeft, child: Text("Drop-in sessions are conducted as in-person, group sessions at the designated Peer Educator location", style: TextStyle(fontSize: 16),),),
