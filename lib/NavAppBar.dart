@@ -9,16 +9,14 @@ class NavAppBar extends StatelessWidget implements PreferredSizeWidget{
 
   @override
   Widget build(BuildContext context) {
-      return AppBar(
-        title: const Align( //Title Bar
-        alignment: Alignment.bottomLeft,
-        child: Image(image: NetworkImage(
-        "https://dlmrue3jobed1.cloudfront.net/uploads/school/SouthernNewHampshireUniversity/snhu_initials_rgb_pos.png"),
-    width: 300,
-    height: 100,)
-    ),
-    flexibleSpace: Container(
-    decoration: const BoxDecoration(color: Color(0xff009DEA)),),
+    return AppBar(
+      centerTitle: true,
+      title: const Image(image: NetworkImage(
+              "https://dlmrue3jobed1.cloudfront.net/uploads/school/SouthernNewHampshireUniversity/snhu_initials_rgb_pos.png"),
+             fit: BoxFit.contain,
+            height: 100,),
+      flexibleSpace: Container(
+        decoration: const BoxDecoration(color: Color(0xff009DEA)),),
     );
   }
 
